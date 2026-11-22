@@ -431,7 +431,7 @@ function renderReader() {
     <h1>${esc(j.title)}</h1>
     <div class="who-line"><div class="avatar" style="background:${colorFor(j.company)}">${esc((j.company || "?")[0].toUpperCase())}</div>
       <div><div class="who">${esc(j.company)}</div><div class="sub">${esc(place(j))}</div></div></div>
-    <div class="actions">${closed ? '<button class="btn primary" type="button" disabled>Closed</button>' : `<a class="btn primary" id="applyBtn" href="apply.html?JobID=${encodeURIComponent(j.id)}" target="_blank" rel="noopener">Apply now</a>`}
+    <div class="actions">${closed ? '<button class="btn primary" type="button" disabled>Closed</button>' : `<a class="btn primary" id="applyBtn" href="apply?JobID=${encodeURIComponent(j.id)}" target="_blank" rel="noopener">Apply now</a>`}
       ${j.days != null && j.days >= 0 && j.days <= 7 ? `<span class="closing">${esc(daysText(j))}</span>` : ""}</div>
     <div class="facts">${facts.map(f => `<div class="fact"><small>${f[0]}</small><span>${esc(f[1])}</span></div>`).join("")}</div>
     ${j.skills.length ? `<h3>Skills</h3><div class="chips">${j.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>` : ""}
