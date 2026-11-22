@@ -93,7 +93,7 @@
 <header>
   <a class="brand" href="index.html">Job<span>Keeda</span></a>
   <nav>
-    <a href="Jobs.html">All jobs</a>
+    <a href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=mPJyn3wyRku5XfbUzfnect0SPkIxx_JJsaXeJFRSNxRUM01aNE02SFU2WktVSUVMWU84V00wN0xJWS4u">Add jobs</a>
   </nav>
 </header>
 
@@ -132,8 +132,8 @@
   categories.forEach(cat => {
     const a = document.createElement('a');
     a.className = 'note';
-    // Result e.g. Jobs.html?category=Human%20Resources  (encoded so "&" is safe)
-    a.href = 'Jobs.html?category=' + encodeURIComponent(cat.name);
+    // Result e.g. Jobs?category=Human%20Resources  (encoded so "&" is safe)
+    a.href = 'Jobs?category=' + encodeURIComponent(cat.name);
     a.innerHTML =
       '<div><div class="icon" aria-hidden="true">' + cat.icon + '</div>' +
       '<h2></h2></div><div class="go">View jobs</div>';
