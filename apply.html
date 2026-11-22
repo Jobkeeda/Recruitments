@@ -73,7 +73,7 @@
 </head>
 <body>
 
-<header class="topbar"><a class="brand" href="index.html">JobKeeda</a></header>
+<header class="topbar"><a class="brand" href="index">JobKeeda</a></header>
 
 <main class="wrap">
   <section class="card">
@@ -126,7 +126,7 @@
       <div class="tick warn">!</div>
       <h2>Link is not valid</h2>
       <p>This link has no JobID. Please go back to the openings and click Apply again.</p>
-      <a class="btn primary" href="index.html">Go to openings</a>
+      <a class="btn primary" href="index">Go to openings</a>
     </div>
   </section>
 </main>
@@ -150,7 +150,7 @@ if (!JOB_ID) {
 } else {
   $("#aJobId").value = JOB_ID;
   $("#aJid").textContent = "JobID: " + JOB_ID; $("#aJid").hidden = false;
-  // Title/company are saved by Jobs.html when Apply is clicked (same site). Optional, display only.
+  // Title/company are saved by Jobs when Apply is clicked (same site). Optional, display only.
   try {
     const info = JSON.parse(localStorage.getItem("JobKeeda.job." + JOB_ID) || "null");
     if (info && info.title) {
@@ -192,7 +192,7 @@ form.addEventListener("input", e => { if (e.target.closest(".field")) setErr(e.t
 function closeWindow() {
   window.close();
   // If the browser blocks closing, fall back to the home page
-  setTimeout(() => { if (!window.closed) location.href = "index.html"; }, 400);
+  setTimeout(() => { if (!window.closed) location.href = "index"; }, 400);
 }
 $("#aCancel").onclick = closeWindow;
 $("#closeBtn").onclick = closeWindow;
