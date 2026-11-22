@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Apply – JobKeeda</title>
+<style>
+  :root {
+    --blue: #0f6cbd; --blue-dark: #115ea3; --blue-tint: #ebf3fc; --bar: #0f548c;
+    --bg: #f5f5f5; --panel: #fff; --line: #e0e0e0; --text: #242424; --muted: #616161;
+    --red: #c50f1f; --green: #107c10;
+    --font: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font: 14px/1.45 var(--font); color: var(--text); background: var(--bg); min-height: 100vh; min-height: 100dvh; }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  [hidden] { display: none !important; }
+
+  .topbar { background: var(--bar); color: #fff; display: flex; align-items: center; padding: 8px 16px;
+            padding-top: calc(8px + env(safe-area-inset-top, 0px)); min-height: 48px; }
+  .brand { color: #fff; font-weight: 600; font-size: 16px; text-decoration: none; }
+
+  .wrap { max-width: 660px; margin: 24px auto; padding: 0 16px calc(32px + env(safe-area-inset-bottom, 0px)); }
+  .card { background: var(--panel); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 14px rgba(0,0,0,.12); }
+  .c-head { background: var(--bar); color: #fff; padding: 16px 20px; }
+  .c-head h1 { font-size: 20px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+  .c-head p { font-size: 13px; opacity: .88; margin-top: 3px; }
+  .c-head .jid { display: inline-block; margin-top: 8px; background: rgba(255,255,255,.18); border-radius: 12px; padding: 2px 10px; font-size: 12px; }
+
+  .c-body { padding: 18px 20px 6px; }
+  .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full { grid-column: 1 / -1; }
+  .field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .field label i { color: var(--red); font-style: normal; }
+  .field input { width: 100%; height: 38px; border: 1px solid #c7c7c7; border-radius: 4px; padding: 0 10px; background: #fff; }
+  .field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 1px 0 var(--blue); }
+  .field input[type=file] { height: auto; padding: 6px; }
+  input[type=file]::file-selector-button { border: 1px solid #c7c7c7; background: #f3f3f3; border-radius: 4px; padding: 5px 12px; margin-right: 10px; font: inherit; cursor: pointer; }
+  .field .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .field .err { color: var(--red); font-size: 12.5px; margin-top: 4px; }
+  .field.bad input { border-color: var(--red); }
+  .form-err { white-space: pre-wrap; overflow-wrap: anywhere; background: #fde7e9; color: #8a0f1b; border-radius: 4px; padding: 9px 12px; margin-top: 14px; font-size: 13px; }
+  .c-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; margin-top: 12px; border-top: 1px solid var(--line); background: #fafafa; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 36px; min-width: 96px; padding: 0 20px; border-radius: 4px;
+         border: 1px solid #c7c7c7; background: #fff; font-weight: 600; text-decoration: none; color: var(--text); }
+  .btn:hover { background: #f3f3f3; }
+  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .btn.primary:hover { background: var(--blue-dark); }
+  .btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+  .msg { padding: 44px 24px; text-align: center; }
+  .msg .tick { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; font-size: 28px; margin: 0 auto 14px; }
+  .msg .tick.warn { background: var(--red); }
+  .msg h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .msg p { color: var(--muted); max-width: 30em; margin: 0 auto; }
+  .msg .btn { margin-top: 20px; }
+
+  @media (max-width: 600px) {
+    body { font-size: 15px; background: var(--panel); }
+    .wrap { margin: 0; padding: 0 0 env(safe-area-inset-bottom, 0px); max-width: none; }
+    .card { border-radius: 0; box-shadow: none; }
+    .fgrid { grid-template-columns: 1fr; }
+    .field input { height: 44px; font-size: 16px; }
+    .c-foot { position: sticky; bottom: 0; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+    .c-foot .btn { flex: 1; height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="topbar"><a class="brand" href="index.html">JobKeeda</a></header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="c-head">
+      <h1 id="aTitle">Application form</h1>
+      <p id="aSub" hidden></p>
+      <span class="jid" id="aJid" hidden></span>
+    </div>
+
+    <!-- Form -->
+    <form id="applyForm" novalidate>
+      <input type="hidden" name="JobID" id="aJobId">
+      <div class="c-body">
+        <div class="fgrid">
+          <div class="field full"><label for="aName">Full name <i>*</i></label>
+            <input id="aName" name="CandidateName" autocomplete="name" required><div class="err"></div></div>
+          <div class="field"><label for="aEmail">Email <i>*</i></label>
+            <input id="aEmail" name="Email" type="email" autocomplete="email" inputmode="email" required><div class="err"></div></div>
+          <div class="field"><label for="aMobile">Mobile <i>*</i></label>
+            <input id="aMobile" name="Mobile" type="tel" autocomplete="tel" inputmode="tel" required><div class="err"></div></div>
+          <div class="field"><label for="aLoc">Current location <i>*</i></label>
+            <input id="aLoc" name="CurrentLocation" autocomplete="address-level2" placeholder="City" required><div class="err"></div></div>
+          <div class="field"><label for="aExp">Experience (years) <i>*</i></label>
+            <input id="aExp" name="Experience" type="number" min="0" max="60" step="0.5" inputmode="decimal" placeholder="0 if fresher" required><div class="err"></div></div>
+          <div class="field full"><label for="aQual">Qualification <i>*</i></label>
+            <input id="aQual" name="Qualification" list="qualList" placeholder="Highest qualification" required><div class="err"></div>
+            <datalist id="qualList"><option value="10th"><option value="12th"><option value="Diploma"><option value="B.Com"><option value="B.Sc"><option value="BBA"><option value="B.E. / B.Tech"><option value="Graduate"><option value="M.Com"><option value="MBA"><option value="M.Sc"><option value="M.E. / M.Tech"><option value="Post graduate"></datalist></div>
+          <div class="field full"><label for="aCv">Resume <i>*</i></label>
+            <input id="aCv" name="Resume" type="file" required>
+            <div class="hint">Any format, up to <span id="maxMb"></span> MB.</div><div class="err"></div></div>
+        </div>
+        <div class="form-err" id="formErr" role="alert" hidden></div>
+      </div>
+      <div class="c-foot">
+        <button class="btn" id="aCancel" type="button">Cancel</button>
+        <button class="btn primary" id="aSend" type="submit">Send</button>
+      </div>
+    </form>
+
+    <!-- Success -->
+    <div class="msg" id="done" hidden>
+      <div class="tick">&#10003;</div>
+      <h2>Application sent</h2>
+      <p id="doneText">Thank you. We will contact you if your profile matches.</p>
+      <button class="btn primary" id="closeBtn" type="button">Close window</button>
+    </div>
+
+    <!-- Missing JobID -->
+    <div class="msg" id="invalid" hidden>
+      <div class="tick warn">!</div>
+      <h2>Link is not valid</h2>
+      <p>This link has no JobID. Please go back to the openings and click Apply again.</p>
+      <a class="btn primary" href="index.html">Go to openings</a>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ================== CONFIG ================== */
+// Flow 2 (apply). Receives a JSON body sent as text/plain (avoids the CORS pre-flight Power Automate can't answer).
+const FLOW2_URL = "https://2ee217396b6fe0ffb476c1e33c828f.d4.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/18/workflows/2beab186168d4bdba2fb5703f3037e35/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LR7ENf7lVhGt2RQtRBHiRgAerzEmTJVmNkVRkYxhYHg";
+const MAX_FILE_MB = 5;   // resume size limit
+
+/* ================== SETUP ================== */
+const $ = s => document.querySelector(s);
+const form = $("#applyForm");
+const JOB_ID = (new URLSearchParams(location.search).get("JobID") || "").trim();
+let sending = false;
+
+$("#maxMb").textContent = MAX_FILE_MB;
+
+if (!JOB_ID) {
+  form.hidden = true; $("#invalid").hidden = false;
+} else {
+  $("#aJobId").value = JOB_ID;
+  $("#aJid").textContent = "JobID: " + JOB_ID; $("#aJid").hidden = false;
+  // Title/company are saved by Jobs.html when Apply is clicked (same site). Optional, display only.
+  try {
+    const info = JSON.parse(localStorage.getItem("JobKeeda.job." + JOB_ID) || "null");
+    if (info && info.title) {
+      $("#aTitle").textContent = "Apply for " + info.title;
+      const sub = [info.company, info.place].filter(Boolean).join(" \u00B7 ");
+      if (sub) { $("#aSub").textContent = sub; $("#aSub").hidden = false; }
+      document.title = "Apply for " + info.title + " \u2013 JobKeeda";
+    }
+  } catch (_) {}
+  if (!matchMedia("(max-width:600px)").matches) $("#aName").focus();
+}
+
+/* ================== VALIDATION ================== */
+const RULES = {
+  CandidateName:   v => v.trim().length < 2 ? "Enter your full name" : "",
+  Email:           v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? "" : "Enter a valid email address",
+  Mobile:          v => { const d = v.replace(/\D/g, ""); return d.length >= 10 && d.length <= 13 ? "" : "Enter a valid mobile number"; },
+  CurrentLocation: v => v.trim() ? "" : "Enter your current city",
+  Experience:      v => { const n = parseFloat(v); return v.trim() !== "" && n >= 0 && n <= 60 ? "" : "Enter experience in years (0 if fresher)"; },
+  Qualification:   v => v.trim() ? "" : "Enter your highest qualification"
+};
+function setErr(input, msg) {
+  const f = input.closest(".field"); f.classList.toggle("bad", !!msg); f.querySelector(".err").textContent = msg || "";
+}
+function validate() {
+  let first = null;
+  for (const [name, rule] of Object.entries(RULES)) {
+    const el = form.elements[name], m = rule(el.value); setErr(el, m); if (m && !first) first = el;
+  }
+  const cv = form.elements.Resume, file = cv.files[0];
+  const m = !file ? "Attach your resume" : file.size > MAX_FILE_MB * 1048576 ? "File is larger than " + MAX_FILE_MB + " MB" : file.size === 0 ? "This file is empty" : "";
+  setErr(cv, m); if (m && !first) first = cv;
+  if (first) first.focus();
+  return !first;
+}
+form.addEventListener("input", e => { if (e.target.closest(".field")) setErr(e.target, ""); $("#formErr").hidden = true; });
+
+/* ================== WINDOW ================== */
+function closeWindow() {
+  window.close();
+  // If the browser blocks closing, fall back to the home page
+  setTimeout(() => { if (!window.closed) location.href = "index.html"; }, 400);
+}
+$("#aCancel").onclick = closeWindow;
+$("#closeBtn").onclick = closeWindow;
+
+/* ================== SEND TO FLOW 2 ================== */
+const toB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1] || ""); r.onerror = () => rej(new Error("Could not read the file")); r.readAsDataURL(f); });
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (sending || !validate()) return;
+  const btn = $("#aSend"), err = $("#formErr");
+  sending = true; btn.disabled = true; btn.textContent = "Sending\u2026"; err.hidden = true;
+  try {
+    const file = form.elements.Resume.files[0];
+    const payload = {
+      JobID: form.elements.JobID.value,
+      CandidateName: form.elements.CandidateName.value.trim(),
+      Email: form.elements.Email.value.trim(),
+      Mobile: form.elements.Mobile.value.trim(),
+      CurrentLocation: form.elements.CurrentLocation.value.trim(),
+      Experience: Number(form.elements.Experience.value),
+      Qualification: form.elements.Qualification.value.trim(),
+      ResumeName: file.name,
+      ResumeType: file.type || "application/octet-stream",
+      ResumeContent: await toB64(file)          // base64, no "data:" prefix
+    };
+    // String body => Content-Type text/plain => no CORS pre-flight
+    const res = await fetch(FLOW2_URL, { method: "POST", body: JSON.stringify(payload) });
+    if (!res.ok) {
+      const body = (await res.text().catch(() => "")).replace(/\s+/g, " ").trim().slice(0, 400);
+      throw new Error("The server replied with status " + res.status + (body ? ": " + body : ""));
+    }
+
+    form.hidden = true; $("#done").hidden = false; window.scrollTo(0, 0);
+    // Try to close this tab automatically; if the browser blocks it, the button and message remain
+    setTimeout(() => {
+      window.close();
+      setTimeout(() => { if (!window.closed) $("#doneText").textContent = "Thank you. We will contact you if your profile matches. You can close this tab now."; }, 400);
+    }, 2500);
+  } catch (ex) {
+    console.error(ex);
+    const why = ex instanceof TypeError
+      ? "Could not reach the server (network problem, blocked request, or the flow response is missing CORS headers)."
+      : ex.message;
+    err.textContent = "We could not send your application. Please try again.\n\nDetails: " + why;
+    err.hidden = false;
+    sending = false; btn.disabled = false; btn.textContent = "Send";
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Openings – JobKeeda</title>
+<style>
+  :root {
+    --blue: #0f6cbd; --blue-dark: #115ea3; --blue-tint: #ebf3fc; --bar: #0f548c;
+    --bg: #f5f5f5; --panel: #fff; --line: #e0e0e0; --text: #242424; --muted: #616161;
+    --red: #c50f1f; --green: #107c10;
+    --font: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font: 14px/1.45 var(--font); color: var(--text); background: var(--bg);
+         height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Top bar ---------- */
+  .topbar { background: var(--bar); color: #fff; display: flex; align-items: center; gap: 12px;
+            padding: 8px 14px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); flex-shrink: 0; min-height: 48px; }
+  .brand { color: #fff; font-weight: 600; font-size: 16px; text-decoration: none; white-space: nowrap; }
+  .menu-btn { display: none; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 0; border-radius: 4px;
+              background: rgba(255,255,255,.16); color: #fff; }
+  .menu-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+  .badge { background: #fff; color: var(--bar); border-radius: 10px; min-width: 18px; height: 18px; padding: 0 5px;
+           font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; }
+  .badge:empty { display: none; }
+  .search { flex: 1; max-width: 520px; margin: 0 auto; }
+  .search input { width: 100%; height: 32px; border: 0; border-radius: 4px; padding: 0 12px;
+                  background: rgba(255,255,255,.18); color: #fff; }
+  .search input::placeholder { color: rgba(255,255,255,.85); }
+  .search input:focus { background: #fff; color: var(--text); outline: none; }
+  .search input:focus::placeholder { color: var(--muted); }
+  .topbar .home { color: #fff; text-decoration: none; opacity: .92; white-space: nowrap; }
+  .topbar .home:hover { text-decoration: underline; }
+
+  /* ---------- Layout ---------- */
+  .app { flex: 1; min-height: 0; display: grid; grid-template-columns: 270px 380px 1fr; }
+  .pane { background: var(--panel); min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+  /* ---------- Filters ---------- */
+  .filters { background: #fafafa; border-right: 1px solid var(--line); }
+  .f-head { position: sticky; top: 0; z-index: 2; background: #fafafa; display: flex; align-items: center;
+            justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .f-head h2 { font-size: 16px; font-weight: 600; }
+  .f-head .right { display: flex; align-items: center; gap: 6px; }
+  .link { background: none; border: 0; color: var(--blue); padding: 4px 2px; font-weight: 600; }
+  .link:hover { text-decoration: underline; }
+  .f-close { display: none; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 4px; background: #fff; font-size: 20px; line-height: 1; }
+  .grp { border-bottom: 1px solid var(--line); }
+  .grp summary { list-style: none; cursor: pointer; padding: 11px 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  .grp summary::-webkit-details-marker { display: none; }
+  .grp summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); margin: -3px 2px 0 8px; transition: transform .15s; }
+  .grp[open] summary::after { transform: rotate(-135deg); margin-top: 3px; }
+  .grp summary:hover { background: #f0f0f0; }
+  .opts { padding: 0 14px 12px; max-height: 210px; overflow-y: auto; }
+  .chk { display: flex; align-items: center; gap: 9px; padding: 5px 0; cursor: pointer; }
+  .chk input { width: 16px; height: 16px; accent-color: var(--blue); margin: 0; flex: none; }
+  .chk .lbl { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .chk .n { color: var(--muted); font-size: 12px; }
+  .fld { padding: 0 14px 14px; }
+  .fld input, .fld select { width: 100%; height: 34px; border: 1px solid #c7c7c7; border-radius: 4px; padding: 0 10px; background: #fff; }
+  .fld input:focus, .fld select:focus { outline: none; border-color: var(--blue); box-shadow: 0 1px 0 var(--blue); }
+  .fld small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .f-foot { display: none; position: sticky; bottom: 0; background: #fafafa; border-top: 1px solid var(--line);
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
+
+  /* ---------- List ---------- */
+  .list { border-right: 1px solid var(--line); }
+  .list-head { position: sticky; top: 0; z-index: 1; background: var(--panel); padding: 12px 14px 10px; border-bottom: 1px solid var(--line); }
+  .list-head h2 { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
+  .list-tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; color: var(--muted); }
+  .list-tools b { color: var(--text); }
+  .list-tools select { height: 30px; border: 1px solid #c7c7c7; border-radius: 4px; background: #fff; padding: 0 6px; max-width: 170px; }
+  .job { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: var(--panel);
+         padding: 11px 14px 11px 16px; position: relative; }
+  .job:hover { background: #f5f5f5; }
+  .job.selected { background: var(--blue-tint); }
+  .job.selected::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--blue); }
+  .job .r1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .job .company { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .job .when { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .job .when.soon { color: var(--red); font-weight: 600; }
+  .job .title { color: var(--blue-dark); margin-top: 1px; font-weight: 600; overflow-wrap: anywhere; }
+  .job .meta { color: var(--muted); font-size: 12.5px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .state { padding: 44px 20px; text-align: center; color: var(--muted); }
+  .state strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 4px; }
+  .skel { height: 88px; margin: 0; border-bottom: 1px solid var(--line);
+          background: linear-gradient(90deg, #fff 25%, #f0f0f0 50%, #fff 75%); background-size: 200% 100%; animation: sh 1.3s infinite; }
+  @keyframes sh { to { background-position: -200% 0; } }
+
+  /* ---------- Reader ---------- */
+  .reader-empty { height: 100%; display: grid; place-items: center; text-align: center; color: var(--muted); padding: 24px; }
+  .reader-empty svg { width: 46px; height: 46px; stroke: #b5b5b5; fill: none; stroke-width: 1.5; margin-bottom: 8px; }
+  .reader-inner { padding: 20px 28px 40px; max-width: 780px; }
+  .back { display: none; background: none; border: 0; color: var(--blue); font-weight: 600; padding: 0 0 12px; }
+  .reader h1 { font-size: 22px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+  .who-line { display: flex; align-items: center; gap: 12px; margin: 14px 0; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 600; flex: none; }
+  .who-line .who { font-weight: 600; }
+  .who-line .sub { color: var(--muted); font-size: 12.5px; }
+  .actions { position: sticky; top: 0; z-index: 1; background: var(--panel); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+             padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .btn { text-decoration: none; color: var(--text); display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 20px; border-radius: 4px;
+         border: 1px solid #c7c7c7; background: #fff; font-weight: 600; }
+  .btn:hover { background: #f3f3f3; }
+  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .btn.primary:hover { background: var(--blue-dark); }
+  .btn[disabled] { opacity: .55; cursor: not-allowed; }
+  .closing { color: var(--red); font-weight: 600; font-size: 13px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 18px 0; }
+  .fact { background: var(--bg); border-radius: 6px; padding: 10px 12px; min-width: 0; }
+  .fact small { display: block; color: var(--muted); font-size: 12px; }
+  .fact span { font-weight: 600; overflow-wrap: anywhere; }
+  .reader h3 { margin: 18px 0 6px; font-size: 15px; font-weight: 600; }
+  .desc { line-height: 1.6; }
+  .desc p, .desc ul, .desc ol { margin: 0 0 .8em; }
+  .desc ul, .desc ol { padding-left: 1.3em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: var(--blue-tint); color: var(--blue-dark); padding: 3px 10px; border-radius: 12px; font-size: 12.5px; }
+
+  .scrim { display: none; }
+
+  /* ---------- Tablet: filters become a drawer ---------- */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 370px 1fr; }
+    .menu-btn { display: inline-flex; }
+    .filters { position: fixed; left: 0; top: 0; bottom: 0; width: 310px; max-width: 88vw; z-index: 30; transform: translateX(-102%);
+               transition: transform .22s; box-shadow: 6px 0 22px rgba(0,0,0,.25); visibility: hidden; }
+    body.drawer .filters { transform: none; visibility: visible; }
+    body.drawer .scrim { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 25; }
+    .f-close { display: grid; place-items: center; }
+    .f-foot { display: block; }
+  }
+
+  /* ---------- Phone: one pane at a time ---------- */
+  @media (max-width: 700px) {
+    body { font-size: 15px; }
+    .topbar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); }
+    .topbar .home { margin-left: auto; font-size: 13px; }
+    .search { order: 3; flex-basis: 100%; max-width: none; }
+    .search input { height: 38px; font-size: 16px; }
+    .app { grid-template-columns: 1fr; }
+    .list { border-right: 0; }
+    .reader { display: none; }
+    .app.show-detail .list { display: none; }
+    .app.show-detail .reader { display: block; }
+    .back { display: block; }
+    .reader-inner { padding: 14px 16px calc(30px + env(safe-area-inset-bottom, 0px)); }
+    .reader h1 { font-size: 20px; }
+    .actions .btn { flex: 1; height: 44px; }
+    .job { padding: 13px 14px 13px 16px; }
+    .chk { padding: 9px 0; }
+    .fld input, .fld select { height: 42px; font-size: 16px; }
+    .list-tools select { height: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open filters">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters<span class="badge" id="fBadge"></span>
+  </button>
+  <a class="brand" href="index.html">JobKeeda</a>
+  <div class="search"><input id="q" type="search" placeholder="Search title, company or skill" aria-label="Search"></div>
+  <a class="home" href="index.html">&larr; Categories</a>
+</header>
+
+<div class="app" id="app">
+
+  <!-- Filters -->
+  <aside class="pane filters" id="filters" aria-label="Filters">
+    <div class="f-head">
+      <h2>Filters</h2>
+      <div class="right">
+        <button class="link" id="clear" type="button">Clear all</button>
+        <button class="f-close" id="fClose" type="button" aria-label="Close filters">&times;</button>
+      </div>
+    </div>
+
+    <details class="grp" open>
+      <summary>Your experience</summary>
+      <div class="fld"><input id="cExp" type="number" min="0" max="60" step="0.5" inputmode="decimal" placeholder="Years, e.g. 3" aria-label="Your experience in years">
+        <small>Shows openings that fit this experience.</small></div>
+    </details>
+    <details class="grp">
+      <summary>Minimum salary</summary>
+      <div class="fld"><input id="cSal" type="number" min="0" step="1000" inputmode="numeric" placeholder="Amount in &#8377;" aria-label="Minimum salary">
+        <small>Shows openings paying at least this much.</small></div>
+    </details>
+    <details class="grp">
+      <summary>Apply before</summary>
+      <div class="fld"><select id="cClose" aria-label="Closing date">
+        <option value="">Any date</option><option value="7">Within 7 days</option><option value="15">Within 15 days</option><option value="30">Within 30 days</option>
+      </select></div>
+    </details>
+
+    <div id="fGroups"></div>
+
+    <div class="f-foot"><button class="btn primary" id="fShow" type="button" style="width:100%">Show results</button></div>
+  </aside>
+
+  <!-- List -->
+  <section class="pane list" aria-label="Openings">
+    <div class="list-head">
+      <h2 id="listTitle">Openings</h2>
+      <div class="list-tools">
+        <span id="count" aria-live="polite"></span>
+        <select id="sort" aria-label="Sort by">
+          <option value="deadline">Closing soonest</option>
+          <option value="salary">Highest salary</option>
+          <option value="exp">Lowest experience</option>
+          <option value="title">Title A to Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="jobs" aria-busy="true"></div>
+  </section>
+
+  <!-- Reader -->
+  <article class="pane reader" id="reader" aria-live="polite"></article>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<script>
+/* ================== CONFIG ================== */
+// Flow 1 (load openings).
+// Trigger: "When an HTTP request is received", Method POST, Request Body JSON Schema EMPTY.
+// The page sends NO body, only a query string:  ?action=jobs&category=<category>
+const FLOW1_URL = "https://2ee217396b6fe0ffb476c1e33c828f.d4.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/11/workflows/f1dda8a4563e47ff9833d10f682c708d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qImzaCRYtLEyPaQhnKToIIzMCTRfZxQYqZ_MP4osX7A";
+
+const SALARY_PERIOD = "per year";   // shown after salary, e.g. "per year" or "per month" ("" to hide)
+const HIDE_EXPIRED  = true;         // hide openings whose Deadline has passed
+
+/* ================== HELPERS ================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CATEGORY = (new URLSearchParams(location.search).get("category") || "").trim();
+
+function pick(o, names) {
+  for (const n of names) {
+    if (o[n] != null && o[n] !== "") return o[n];
+    const k = Object.keys(o).find(k => k.toLowerCase().replace(/[\s_]|x0020/g, "") === n.toLowerCase().replace(/[\s_]/g, ""));
+    if (k && o[k] != null && o[k] !== "") return o[k];
+  }
+  return "";
+}
+const text = v => (v && typeof v === "object" && !Array.isArray(v)) ? (v.Value ?? v.value ?? v.Title ?? v.DisplayName ?? "") : (v ?? "");
+const num = v => { v = text(v); if (v === "" || v == null) return null; const x = parseFloat(String(v).replace(/[^\d.\-]/g, "")); return isNaN(x) ? null : x; };
+function toList(v) {
+  if (v == null || v === "") return [];
+  if (Array.isArray(v)) return v.map(x => String(text(x)).trim()).filter(Boolean);
+  if (typeof v === "object") return [String(text(v)).trim()].filter(Boolean);
+  return String(v).split(/[,;|\n]/).map(s => s.trim()).filter(Boolean);
+}
+function parseDate(v) {
+  v = text(v); if (!v) return null;
+  let d = new Date(v);
+  if (isNaN(d)) { const m = String(v).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/); if (m) d = new Date(+m[3], +m[2] - 1, +m[1]); }
+  return isNaN(d) ? null : d;
+}
+const dayStart = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+function cleanHtml(html) {
+  const doc = new DOMParser().parseFromString("<div>" + html + "</div>", "text/html");
+  const allowed = new Set(["P","BR","UL","OL","LI","B","STRONG","I","EM","U","DIV","SPAN","H1","H2","H3","H4"]);
+  (function walk(n) {
+    [...n.children].forEach(c => { walk(c); if (!allowed.has(c.tagName)) c.replaceWith(...c.childNodes); else [...c.attributes].forEach(a => c.removeAttribute(a.name)); });
+  })(doc.body.firstChild);
+  return doc.body.firstChild.innerHTML;
+}
+const plain = html => (new DOMParser().parseFromString(html, "text/html").body.textContent || "").replace(/\s+/g, " ").trim();
+
+/* Accepts a JSON array, {value:[]}, or an HTML table */
+function parseResponse(txt) {
+  let data;
+  try { data = JSON.parse(txt); } catch (e) { return parseHtmlTable(txt); }
+  if (typeof data === "string") return parseResponse(data);
+  if (Array.isArray(data)) return data;
+  for (const k of ["value", "jobs", "body", "data", "rows"]) {
+    if (data && data[k] !== undefined) return parseResponse(typeof data[k] === "string" ? data[k] : JSON.stringify(data[k]));
+  }
+  return [];
+}
+function parseHtmlTable(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const table = doc.querySelector("table"); if (!table) return [];
+  const rows = [...table.querySelectorAll("tr")];
+  const heads = [...rows[0].children].map(c => c.textContent.trim());
+  return rows.slice(1).map(r => { const o = {}; [...r.children].forEach((c, i) => { o[heads[i]] = c.innerHTML.trim(); }); return o; });
+}
+
+/* ================== DATA MODEL ================== */
+function normalize(raw, i) {
+  const s = (...n) => String(text(pick(raw, n))).trim();
+  const desc = String(pick(raw, ["JobDescription", "Description"]) || "");
+  const deadline = parseDate(pick(raw, ["Deadline", "ApplyBefore"]));
+  const j = {
+    id: s("JobID", "ID", "Id") || String(i + 1),
+    title: s("JobTitle", "Title"), company: s("CompanyName", "Company"), category: s("JobCategory"),
+    dept: s("Department"), city: s("City"), state: s("State"), mode: s("WorkMode"), type: s("EmploymentType"),
+    minExp: num(pick(raw, ["MinExperience"])), maxExp: num(pick(raw, ["MaxExperience"])),
+    minSal: num(pick(raw, ["MinSalary"])), maxSal: num(pick(raw, ["MaxSalary"])),
+    qual: s("Qualification"), skills: toList(pick(raw, ["Skills"])), desc,
+    openings: s("Openings"), deadline,
+    days: deadline ? Math.round((dayStart(deadline) - dayStart(new Date())) / 864e5) : null
+  };
+  j.snippet = plain(desc);
+  j.hay = [j.title, j.company, j.dept, j.city, j.state, j.qual, j.mode, j.type, j.skills.join(" "), j.snippet].join(" ").toLowerCase();
+  return j;
+}
+const rs = n => "\u20B9" + Number(n).toLocaleString("en-IN");
+const place = j => [j.city, j.state].filter(Boolean).join(", ");
+const fmtDate = (d, short) => d.toLocaleDateString("en-IN", short ? { day: "numeric", month: "short" } : { day: "2-digit", month: "short", year: "numeric" });
+function expText(j) {
+  const a = j.minExp, b = j.maxExp;
+  if (a == null && b == null) return "";
+  if (a === 0 && (b == null || b === 0)) return "Fresher";
+  if (b == null) return a + "+ yrs";
+  if (a == null) return "Up to " + b + " yrs";
+  return a === b ? a + " yrs" : a + "\u2013" + b + " yrs";
+}
+function salText(j) {
+  const a = j.minSal, b = j.maxSal; if (a == null && b == null) return "";
+  const t = (a != null && b != null && a !== b) ? rs(a) + " \u2013 " + rs(b) : rs(a ?? b);
+  return SALARY_PERIOD ? t + " " + SALARY_PERIOD : t;
+}
+function daysText(j) { return j.days == null ? "" : j.days < 0 ? "Closed" : j.days === 0 ? "Closes today" : j.days === 1 ? "1 day left" : j.days + " days left"; }
+const COLORS = ["#0f6cbd", "#8764b8", "#038387", "#c239b3", "#ca5010", "#498205", "#4f6bed", "#986f0b"];
+const colorFor = s => COLORS[[...String(s)].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
+
+/* ================== STATE ================== */
+let jobs = [], selId = null, sending = false, lastFocus = null;
+const GROUPS = [
+  { key: "type",    label: "Employment type" },
+  { key: "mode",    label: "Work mode" },
+  { key: "dept",    label: "Department" },
+  { key: "company", label: "Company" },
+  { key: "state",   label: "State" },
+  { key: "city",    label: "City" },
+  { key: "qual",    label: "Qualification" },
+  { key: "skills",  label: "Skills" }
+];
+const sel = {}; GROUPS.forEach(g => sel[g.key] = new Set());
+const vals = (j, k) => k === "skills" ? j.skills : (j[k] ? [j[k]] : []);
+const phone = matchMedia("(max-width:700px)");
+
+/* ================== FILTER + SORT ================== */
+function matches(j) {
+  for (const g of GROUPS) { const s = sel[g.key]; if (s.size && !vals(j, g.key).some(v => s.has(v))) return false; }
+  const q = $("#q").value.trim().toLowerCase(); if (q && !j.hay.includes(q)) return false;
+  const exp = $("#cExp").value; if (exp !== "") { const x = +exp; if ((j.minExp != null && x < j.minExp) || (j.maxExp != null && x > j.maxExp)) return false; }
+  const sal = $("#cSal").value; if (sal !== "") { const top = j.maxSal ?? j.minSal; if (top == null || top < +sal) return false; }
+  const cl = $("#cClose").value; if (cl && (j.days == null || j.days > +cl)) return false;
+  return true;
+}
+function sorted(list) {
+  const by = $("#sort").value, a = list.slice();
+  const f = {
+    deadline: (x, y) => (x.days ?? 1e9) - (y.days ?? 1e9),
+    salary: (x, y) => (y.maxSal ?? y.minSal ?? -1) - (x.maxSal ?? x.minSal ?? -1),
+    exp: (x, y) => (x.minExp ?? 0) - (y.minExp ?? 0),
+    title: (x, y) => x.title.localeCompare(y.title)
+  }[by];
+  return a.sort(f);
+}
+function activeCount() {
+  return GROUPS.reduce((n, g) => n + sel[g.key].size, 0) + ($("#cExp").value !== "") + ($("#cSal").value !== "") + ($("#cClose").value !== "");
+}
+
+/* ================== RENDER ================== */
+const listEl = $("#jobs");
+function showSkeleton() { listEl.setAttribute("aria-busy", "true"); listEl.innerHTML = '<div class="skel"></div>'.repeat(6); $("#count").textContent = ""; }
+function showState(title, msg, retry) {
+  listEl.setAttribute("aria-busy", "false");
+  listEl.innerHTML = `<div class="state"><strong>${esc(title)}</strong>${esc(msg)}${retry ? '<div style="margin-top:14px"><button class="btn" id="retry" type="button">Try again</button></div>' : ""}</div>`;
+  if (retry) $("#retry").onclick = load;
+}
+function buildFilters() {
+  $("#fGroups").innerHTML = GROUPS.map(g => {
+    const counts = new Map();
+    jobs.forEach(j => new Set(vals(j, g.key)).forEach(v => counts.set(v, (counts.get(v) || 0) + 1)));
+    if (!counts.size) return "";
+    const items = [...counts].sort((a, b) => g.key === "skills" ? (b[1] - a[1] || a[0].localeCompare(b[0])) : a[0].localeCompare(b[0]));
+    return `<details class="grp"><summary>${g.label}</summary><div class="opts">${items.map(([v, n]) =>
+      `<label class="chk"><input type="checkbox" data-k="${g.key}" value="${esc(v)}"><span class="lbl">${esc(v)}</span><span class="n">${n}</span></label>`).join("")}</div></details>`;
+  }).join("");
+  const first = $("#fGroups details"); if (first) first.open = true;
+}
+function render() {
+  const out = sorted(jobs.filter(matches));
+  $("#fBadge").textContent = activeCount() || "";
+  listEl.setAttribute("aria-busy", "false");
+  if (!out.length) {
+    $("#count").textContent = "0 openings";
+    showState("No records found", jobs.length ? "Try removing a filter or changing your search." : "");
+  } else {
+    $("#count").innerHTML = `<b>${out.length}</b> ${out.length === 1 ? "opening" : "openings"}`;
+    listEl.innerHTML = out.map(j => {
+      const soon = j.days != null && j.days <= 7;
+      const when = j.days == null ? "" : soon ? daysText(j) : "By " + fmtDate(j.deadline, true);
+      const line1 = [place(j), j.mode, j.type].filter(Boolean).join(" \u00B7 ");
+      const line2 = salText(j) || j.skills.slice(0, 3).join(", ");
+      return `<button class="job ${String(j.id) === String(selId) ? "selected" : ""}" type="button" data-id="${esc(j.id)}">
+        <div class="r1"><span class="company">${esc(j.company || "Company")}</span><span class="when ${soon ? "soon" : ""}">${esc(when)}</span></div>
+        <div class="title">${esc(j.title)}</div>
+        ${line1 ? `<div class="meta">${esc(line1)}</div>` : ""}${line2 ? `<div class="meta">${esc(line2)}</div>` : ""}
+      </button>`;
+    }).join("");
+  }
+  if (selId != null && !out.some(j => String(j.id) === String(selId))) { selId = null; renderReader(); $("#app").classList.remove("show-detail"); }
+}
+function renderReader() {
+  const j = jobs.find(x => String(x.id) === String(selId));
+  if (!j) {
+    $("#reader").innerHTML = '<div class="reader-empty"><div><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg><p>Select an opening to read its details</p></div></div>';
+    return;
+  }
+  const facts = [["Employment type", j.type], ["Work mode", j.mode], ["Experience", expText(j)], ["Salary", salText(j)], ["Qualification", j.qual],
+                 ["Department", j.dept], ["Openings", j.openings], ["Apply before", j.deadline ? fmtDate(j.deadline) : ""]].filter(f => f[1] !== "" && f[1] != null);
+  const closed = j.days != null && j.days < 0;
+  const body = j.desc ? (/[<>]/.test(j.desc) ? cleanHtml(j.desc) : "<p>" + esc(j.desc).replace(/\n/g, "<br>") + "</p>") : "<p>No description added.</p>";
+  $("#reader").innerHTML = `<div class="reader-inner">
+    <button class="back" id="backBtn" type="button">&larr; Back to list</button>
+    <h1>${esc(j.title)}</h1>
+    <div class="who-line"><div class="avatar" style="background:${colorFor(j.company)}">${esc((j.company || "?")[0].toUpperCase())}</div>
+      <div><div class="who">${esc(j.company)}</div><div class="sub">${esc(place(j))}</div></div></div>
+    <div class="actions">${closed ? '<button class="btn primary" type="button" disabled>Closed</button>' : `<a class="btn primary" id="applyBtn" href="apply.html?JobID=${encodeURIComponent(j.id)}" target="_blank" rel="noopener">Apply now</a>`}
+      ${j.days != null && j.days >= 0 && j.days <= 7 ? `<span class="closing">${esc(daysText(j))}</span>` : ""}</div>
+    <div class="facts">${facts.map(f => `<div class="fact"><small>${f[0]}</small><span>${esc(f[1])}</span></div>`).join("")}</div>
+    ${j.skills.length ? `<h3>Skills</h3><div class="chips">${j.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>` : ""}
+    <h3>Description</h3><div class="desc">${body}</div></div>`;
+}
+
+/* ================== EVENTS ================== */
+listEl.addEventListener("click", e => {
+  const b = e.target.closest(".job"); if (!b) return;
+  selId = b.dataset.id;
+  document.querySelectorAll(".job").forEach(x => x.classList.toggle("selected", x === b));
+  renderReader(); $("#reader").scrollTop = 0;
+  $("#app").classList.add("show-detail");
+  if (phone.matches && !(history.state && history.state.d)) history.pushState({ d: 1 }, "");
+});
+$("#reader").addEventListener("click", e => {
+  if (e.target.closest("#backBtn")) { history.state && history.state.d ? history.back() : $("#app").classList.remove("show-detail"); }
+  if (e.target.closest("#applyBtn")) {   // save title for the apply page (display only), then the link opens
+    const j = jobs.find(x => String(x.id) === String(selId));
+    try { if (j) localStorage.setItem("JobKeeda.job." + j.id, JSON.stringify({ title: j.title, company: j.company, place: place(j) })); } catch (_) {}
+  }
+});
+window.addEventListener("popstate", () => $("#app").classList.remove("show-detail"));
+
+["#q", "#cExp", "#cSal", "#cClose", "#sort"].forEach(s => $(s).addEventListener("input", render));
+$("#filters").addEventListener("change", e => {
+  const c = e.target.closest("input[data-k]"); if (!c) return;
+  c.checked ? sel[c.dataset.k].add(c.value) : sel[c.dataset.k].delete(c.value);
+  render();
+});
+$("#clear").onclick = () => {
+  GROUPS.forEach(g => sel[g.key].clear());
+  document.querySelectorAll("input[data-k]").forEach(c => c.checked = false);
+  $("#cExp").value = $("#cSal").value = $("#cClose").value = $("#q").value = "";
+  render();
+};
+function drawer(open) { document.body.classList.toggle("drawer", open); }
+document.addEventListener("keydown", e => { if (e.key === "Escape") drawer(false); });
+$("#menuBtn").onclick = () => drawer(true);
+$("#fClose").onclick = $("#fShow").onclick = $("#scrim").onclick = () => drawer(false);
+
+/* ================== FLOW 1: LOAD OPENINGS FOR THE CATEGORY ================== */
+async function load() {
+  showSkeleton();
+  try {
+    let data;
+    if (!FLOW1_URL) data = [];
+    else {
+      const sep = FLOW1_URL.includes("?") ? "&" : "?";
+      const res = await fetch(FLOW1_URL + sep + "action=jobs&category=" + encodeURIComponent(CATEGORY), { method: "POST" });
+      if (!res.ok) { const d = (await res.text().catch(() => "")).slice(0, 300); throw new Error("Status " + res.status + (d ? ": " + d : "")); }
+      data = parseResponse(await res.text());
+    }
+    jobs = data.map(normalize).filter(j => j.title && !(HIDE_EXPIRED && j.days != null && j.days < 0));
+    buildFilters(); render(); renderReader();
+  } catch (err) {
+    console.error(err);
+    showState("Could not load openings"+ ". Check the URL and try again.");
+  }
+}
+
+/* ================== START ================== */
+$("#listTitle").textContent = CATEGORY || "All openings";
+document.title = (CATEGORY || "Openings") + " \u2013 JobKeeda";
+renderReader();
+load();
+</script>
+</body>
+</html>
